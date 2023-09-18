@@ -78,55 +78,6 @@ export async function getSchedule(group, day, week=-1) {
     })
 }
 
-
-
-
-
-// Возвращает меню выбора недели
-// export async function getSchedule(group, day, week=-1) {
-//     return new Promise(async (res) => {
-//         await getTable(group, week).then(async table => {
-//             let text = `*Расписание - ${table.name}*\n\n`
-            
-//             for (let i = 0; i < 6; i++) {    
-//                 let temp;
-//                 if (day !== i && day !== 6) continue;
-//                 for (let j = 1; j < 8; j++) {
-//                     let position = table.position[j];
-//                     let time = table.time[j];
-//                     let subject = await table.subject[i][j].replace(RegExp(`^$`), "Окно")
-//                     let cabinet;
-//                     if (subject !== "Окно") {
-//                         if (subject.includes("LMS")) {
-//                             cabinet = "LMS"
-//                         }
-//                         if (subject[subject.length - 4] === "-") {
-//                             cabinet = subject.substring(subject.length - 5, subject.length)
-//                         }
-//                         if (subject.includes("ТК ИТА ЮФУ")) {
-//                             cabinet = "ТК ИТА ЮФУ"
-//                         }
-//                         subject = subject.replace(cabinet, "")
-//                         temp += `*${position} пара*\n Время: ${time}\n Кабинет: ${cabinet}\n ${subject}\n\n`
-//                     }
-//                 }
-//                 if (temp !== undefined) text += `*📅 ${table.subject[i][0]}*` + "\n" + temp.replace("undefined", "")
-//             }
-//             text += `Обновлено ${await getTime()} | Неделя: ${table.week}`
-//             res(text)
-//         })
-//     })
-//}
-
-
-
-// Возвращает true || false при проверке строки, в ней должно содержаться только число
-export async function isNumber(text) {
-    return new Promise(async res => {
-        
-    })
-}
-
 // Возвращает строку в консоль в виде "HH:MM:SS Текст"
 export async function sendLog(text) {
     console.log(await getTime() + text)

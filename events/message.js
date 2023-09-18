@@ -1,4 +1,4 @@
-import {sendLog, getGroup, getTable} from "../utils.js"
+import {sendLog, getGroup, getTable} from "../utils.js";
 
 
 export async function run (bot) {

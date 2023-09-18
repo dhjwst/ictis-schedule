@@ -1,4 +1,3 @@
-
 export async function run (bot, msg, args) {
     const opts = {
         parse_mode: "Markdown",
@@ -9,7 +8,6 @@ export async function run (bot, msg, args) {
             ],
         }
     };
-
 
     await bot.sendMessage(msg.chat.id, "*Расписание*\n\nДобро пожаловать! Этот бот разработан для быстрого поиска расписания.\n\n" +
         "Для поика расписания необходимо отправить поисковой запрос. " +

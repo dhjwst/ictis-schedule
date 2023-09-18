@@ -1,4 +1,4 @@
-import {getGroup, getTable, getSchedule} from "../utils.js"
+import {getGroup, getTable, getSchedule} from "../utils.js";
 
 
 export async function run (bot) {
