@@ -1,2 +1,2 @@
 # Расписание ИКТИБ в телеграм боте
-![dashboard](https://ibb.co/q04NktZ)
+![dashboard](https://i.ibb.co/vsr3Z7t/image.png)
