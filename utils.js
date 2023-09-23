@@ -1,5 +1,60 @@
 import axios from "axios";
 
+export async function schedule () {
+    const getQuery = async (query) => {
+        await axios.get("https://webictis.sfedu.ru/schedule-api/?query=" + query)
+        .then(async resp => {
+        // Если при запросе найдено больше одного id
+        if (resp.data?.choices?.length >= 2)
+            for (let i = 0; i < resp.data?.choices.length; i++) {
+                if (resp.data?.choices[i]?.name.toLowerCase() === query.toLowerCase()) {
+                    return {group: resp.data?.choices[i].group, name: resp.data?.choices[i].name};
+                }
+            }
+        // Если найден 1 id
+        else if (resp.data.result !== "no_entries") {
+            return{group: resp.data.table.group, name: resp.data.table.name};
+        }
+            // Если id не найден
+        else return "По указаному запросу ничего не было найдено";
+        })
+        .catch(async error => {
+            console.log(error)
+            return "Не удалось отправить запрос на сервер ИКТИБ. Возможно он временно недоступен, попробуйте отправить запрос позже."
+        })
+
+
+
+        return new Promise(async (res, rej) => {
+            // получаем id
+            await axios.get("https://webictis.sfedu.ru/schedule-api/?query=" + query)
+                .then(async resp => {
+                // Если при запросе найдено больше одного id
+                if (resp.data?.choices?.length >= 2)
+                    for (let i = 0; i < resp.data?.choices.length; i++) {
+                        if (resp.data?.choices[i]?.name.toLowerCase() === query.toLowerCase()) {
+                            res({group: resp.data?.choices[i].group, name: resp.data?.choices[i].name});
+                        }
+                    }
+                // Если найден 1 id
+                else if (resp.data.result !== "no_entries") {
+                    res({group: resp.data.table.group, name: resp.data.table.name});
+                }
+                // Если id не найден
+                else rej("По указаному запросу ничего не было найдено");
+                })
+                .catch(async error => {
+                    console.log(error)
+                    rej("Не удалось отправить запрос на сервер ИКТИБ. Возможно он временно недоступен, попробуйте отправить запрос позже.")
+                })
+        });
+    } 
+}
+
+
+
+
+
 // Возвращает номер группы
 export async function getGroup(query) {
     return new Promise(async (res, rej) => {
@@ -16,7 +71,7 @@ export async function getGroup(query) {
             // Если id не найден
             else rej("По указаному запросу ничего не было найдено");
             })
-            .catch(async error => rej("Не удалось отправить запрос на сервер ИКТИБа. Возможно он временно недоступен, попробуйте отправить запрос позже."))
+            .catch(async error => rej("Не удалось отправить запрос на сервер ИКТИБ. Возможно он временно недоступен, попробуйте отправить запрос позже."))
     });
 }
 
@@ -47,30 +102,24 @@ export async function getSchedule(group, day, week=-1) {
     return new Promise(async (res) => {
         await getTable(group, week).then(async table => {
             let text = `*Расписание - ${table.name} - ${table.week} неделя*\n\n`
-            
             for (let i = 0; i < 6; i++) {    
                 let temp;
                 if (day !== i && day !== 6) continue;
                 for (let j = 1; j < 8; j++) {
-                    let position = table.position[j];
+                
+                    let position = j.toString().replace('1', '📕').replace('2', '📗').replace('3', '📘').replace('4', '📙').replace('5', '📕').replace('6', '📗').replace('7', '📘');
                     let time = table.time[j];
                     let subject = await table.subject[i][j].replace(RegExp(`^$`), "Окно")
-                    let cabinet;
                     if (subject !== "Окно") {
-                        if (subject.includes("LMS")) {
-                            cabinet = "LMS"
-                        }
-                        if (subject[subject.length - 4] === "-") {
-                            cabinet = subject.substring(subject.length - 5, subject.length)
-                        }
-                        if (subject.includes("ТК ИТА ЮФУ")) {
-                            cabinet = "ТК ИТА ЮФУ"
-                        }
-                        subject = subject.replace(cabinet, "")
-                        temp += `*${position} пара*\n Время: ${time}\n Кабинет: ${cabinet}\n ${subject}\n\n`
+                    
+                        temp += `${position}${subject} ${time}\n\n`
                     }
                 }
-                if (temp !== undefined) text += `*📅 ${table.subject[i][0]}*` + "\n" + temp.replace("undefined", "")
+                if (temp !== undefined) text += `*${table.subject[i][0]}*\n${temp.replace("undefined", "")}`
+            }
+            if(text === `*Расписание - ${table.name} - ${table.week} неделя*\n\n`) {
+                text += 'Выходной!'
+                res(text)
             }
             text += `Обновлено ${await getTime()}`
             res(text)

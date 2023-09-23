@@ -21,7 +21,7 @@ export async function run (bot) {
                         ],
                     }
                 };
-                await bot.sendMessage(msg.chat.id, "*Расписание - Полезные ссылки*", opts)
+                await bot.sendMessage(msg.chat.id, "Полезные ссылки для студентов", opts)
                 await bot.deleteMessage(msg.chat.id, msg.message_id)
                 break
             case "Избранное":
@@ -37,7 +37,6 @@ export async function run (bot) {
                             resize_keyboard: true,
                             inline_keyboard: [
                                 [{text: "Выбрать день", callback_data: "select_day"}, {text: "Выбрать неделю", callback_data: "select_week"}],
-                                [{text: "Синхронизация с календарём", callback_data: "sync_calendar"}],
                                 [{text: "Добавить в избранное", callback_data: "add_to_favorite"}]
                             ],
                         }
