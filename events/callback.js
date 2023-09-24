@@ -1,4 +1,4 @@
-import {getGroup, getTable, getSchedule} from "../utils.js";
+import {getGroup, getTable, getSchedule, sendLog} from "../utils.js";
 
 
 export async function run (bot) {
@@ -42,7 +42,7 @@ export async function run (bot) {
                             })
                         break;
                     case query.data.match(/d[0-6]/)?.input:
-                        
+                        await sendLog(`${query.from.username}(${query.from.id}): Выбрал(а) новый день для расписания(${result.name}/${query.data})`)
                         getSchedule(result.group, parseInt(query.data.replace('d', '')), query.message.text.split('\n\n')[0].split(' - ')[2].split(' ')[0]).then(async schedule => {
                             if (query.message.text !== schedule) {
                                 await bot.editMessageText(schedule, {
@@ -75,7 +75,6 @@ export async function run (bot) {
                                 let i = 0;
                                 let temp = 0;
                                 table.weeks.forEach(week => {
-                                    console.log(week)
                                     if (i % 4 === 0) {
                                         temp++
                                         weeks.push([])
@@ -86,7 +85,6 @@ export async function run (bot) {
 
 
                                 weeks.push([{text: "Назад", callback_data: "main"}])
-                                console.log(weeks)
                                 await bot.editMessageText(`*Расписание - ${table.name} - ${query.message.text.split('\n\n')[0].split(' - ')[2].split(' ')[0]} неделя*\n\nВыберите нужную вам неделю`, {
                                     chat_id: query.message.chat.id,
                                     message_id: query.message.message_id,
@@ -100,6 +98,7 @@ export async function run (bot) {
                             .catch(error => console.log)
                             break;
                 case query.data.match(/w[0-9]/)?.input:
+                    await sendLog(`${query.from.username}(${query.from.id}): Выбрал(а) новую неделю для расписания(${result.name}/${query.data})`)
                     await bot.editMessageText(`*Расписание - ${result.name} - ${query.data.replace('w', '')} неделя*\n\nВыберите нужный вам день недели`, {
                         chat_id: query.message.chat.id,
                         message_id: query.message.message_id,
