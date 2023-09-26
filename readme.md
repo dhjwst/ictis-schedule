@@ -9,10 +9,10 @@ NodeJS 16+
 ## Развёртывание приложения
 
 Откройте консоль, введите следующие команды:
-```git clone https://github.com/dhjwst/ictis-schedule.git
-  cd ictis-schedule```
-    После найдите файл `env_example`, переименуйте в `.env`. Откройте его, замените строку `телеграм токен` на токен вашего телеграм бота.
-      Далее введите следующие команды:
-        ```npm install```
-          ```node index```
-            Готово!
+  ```git clone https://github.com/dhjwst/ictis-schedule.git```
+  ```cd ictis-schedule```
+  После найдите файл `env_example`, переименуйте в `.env`. Откройте его, замените строку `телеграм токен` на токен вашего телеграм бота.
+  Далее введите следующие команды:
+  ```npm install```
+  ```node index```
+  Готово!
