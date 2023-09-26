@@ -2,12 +2,14 @@
 ![Расписание](image.png)
 
 ## Системные требования
+
 NodeJS 16+
-512+ GB RAM 
+
+512+ GB RAM
+
 1+ CPU core
 
 ## Развёртывание приложения
-
 Откройте консоль, введите следующие команды:
   
 ```git clone https://github.com/dhjwst/ictis-schedule.git```
