@@ -4,14 +4,18 @@ import { writeFileSync, readFile, existsSync } from "fs";
 // Возвращает номер группы
 export async function getGroup(query) {
     return new Promise(async (res, rej) => {
+        console.log(query)
         // получаем id
         await axios.get("https://webictis.sfedu.ru/schedule-api/?query=" + query)
             .then(async resp => {
+                console.log(resp.data.choices)
             // Если при запросе найдено больше одного id
-            if (resp.data?.choices?.length >= 2)
+            if (resp.data?.choices?.length >= 2) {
                 for (let i = 0; i < resp.data?.choices.length; i++) {
                     if (resp.data?.choices[i]?.name.toLowerCase() === query.toLowerCase()) res({group: resp.data?.choices[i].group, name: resp.data?.choices[i].name});
                 }
+                rej("По указаному запросу ничего не было найдено");
+            }
             // Если найден 1 id
             else if (resp.data.result !== "no_entries") res({group: resp.data.table.group, name: resp.data.table.name});
             // Если id не найден
