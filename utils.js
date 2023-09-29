@@ -4,7 +4,6 @@ import { writeFileSync, readFile, existsSync } from "fs";
 // Возвращает номер группы
 export async function getGroup(query) {
     return new Promise(async (res, rej) => {
-        console.log(query)
         // получаем id
         await axios.get("https://webictis.sfedu.ru/schedule-api/?query=" + query)
             .then(async resp => {
@@ -191,26 +190,26 @@ export async function getFavorites(id) {
 }
 
 export async function addFavorite(id, group) {
-    readFile('users.json', (err, data) => {        
+    readFile('users.json', async (err, data) => {        
         let db = JSON.parse(data);
         let users = db.users
-
         for (let i=0; i < users.length; i++) {
             if (users[i].id === id) {
-                getFavorites(id).then(async favorites => {
+                await getFavorites(id).then(async favorites => {
                     let flag = true
                     favorites.forEach(favorite => {
                         if (favorite === group) {
                             flag = false
                         }
                     });
-                    if (flag) users[i].groups.push(group)
+                    if (flag) {
+                        users[i].groups.push(group)
+                    }
                 })
                 
                 break;
             }
         }
-
         writeFileSync('users.json', JSON.stringify(db))
     })
 }
