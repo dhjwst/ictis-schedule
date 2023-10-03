@@ -1,27 +1,40 @@
 import axios from "axios";
 import { writeFileSync, readFile, existsSync } from "fs";
 
+
+
+// Парсинг расписания
 // Возвращает номер группы
 export async function getGroup(query) {
     return new Promise(async (res, rej) => {
-        console.log(query)
         // получаем id
-        await axios.get("https://webictis.sfedu.ru/schedule-api/?query=" + query)
-            .then(async resp => {
-                console.log(resp.data.choices)
+        await axios.get("https://webictis.sfedu.ru/schedule-api/?query=" + query).then(async resp => {
+            
             // Если при запросе найдено больше одного id
             if (resp.data?.choices?.length >= 2) {
+                
+                // Если удалось найти совпадение
                 for (let i = 0; i < resp.data?.choices.length; i++) {
-                    if (resp.data?.choices[i]?.name.toLowerCase() === query.toLowerCase()) res({group: resp.data?.choices[i].group, name: resp.data?.choices[i].name});
+                    if (resp.data?.choices[i]?.name.toLowerCase() === query.toLowerCase()) return res({group: resp.data?.choices[i].group, name: resp.data?.choices[i].name});
                 }
-                rej("По указаному запросу ничего не было найдено");
+
+                // Если не удалось найти совпадение, то возвращаем кнопки с вариантами выбора
+                let buttons = []
+                for (let i = 0; i < 5; i++) {
+                    if (resp.data?.choices.length === i) break;
+                    buttons.push([{ text: resp.data?.choices[i]?.name, callback_data: resp.data?.choices[i]?.name }])
+                }
+                buttons.push([{ text: "Удалить", callback_data: "remove_message" }])                
+                return res ({buttons: buttons})
             }
+
             // Если найден 1 id
-            else if (resp.data.result !== "no_entries") res({group: resp.data.table.group, name: resp.data.table.name});
+            else if (resp.data.result !== "no_entries") return res({group: resp.data.table.group, name: resp.data.table.name});
+            
             // Если id не найден
-            else rej("По указаному запросу ничего не было найдено");
+            else return rej("🚫 По указаному запросу ничего не было найдено.");
             })
-            .catch(async error => rej("Не удалось отправить запрос на сервер ИКТИБ. Возможно он временно недоступен, попробуйте отправить запрос позже."))
+            .catch(async error =>  rej("Не удалось отправить запрос на сервер ИКТИБ. Возможно он временно недоступен, попробуйте отправить запрос позже. :( " + error))
     });
 }
 
@@ -82,7 +95,10 @@ export async function getSchedule(group, day, id, week=-1) {
     })
 }
 
+
+
 // Логирование
+// Отправляет результат действия в консоль, сохраняет в файл logs.txt вместе со временем
 export async function sendLog(text) {
 
     readFile('logs.txt', async (err, data) => {
@@ -102,7 +118,9 @@ export async function getTime() {
     })
 }
 
-// БД
+
+
+// Файлы
 export async function checkFileDB() {
     if(!existsSync('./users.json')) {
         sendLog('Файл с данными был создан')
@@ -113,6 +131,8 @@ export async function checkFileDB() {
         writeFileSync('users.json', '{"users": [], "stats": {"schedulesReceivedTotal": 0}}')
     }
 }
+
+
 
 // Пользователь
 export async function findID(id) {
@@ -173,6 +193,8 @@ export async function getUser(id) {
         });
     })
 }
+
+
 
 // Избранное
 export async function getFavorites(id) {
@@ -243,26 +265,35 @@ export async function removeFavorite(id, group) {
 export async function isFavorite(id, group) {
     return new Promise(async res => {
         readFile('users.json', (err, data) => {  
+            
             let db = JSON.parse(data);
-            let flag = false
+            
+            let buttons = [
+                [{text: "Выбрать день", callback_data: "select_day"}, {text: "Выбрать неделю", callback_data: "select_week"}],
+                [{text: "Добавить в избранное", callback_data: "add_to_favorite"}]
+            ]
 
             for (let i=0; i < db.users.length; i++) {
                 let user = db.users[i]
                 if (user.id === id) {
                     for (let j=0; j < user.groups.length; j++) {
                         if (group === user.groups[j]) {
-                            flag = true;
+                            buttons = [
+                                [{text: "Выбрать день", callback_data: "select_day"}, {text: "Выбрать неделю", callback_data: "select_week"}],
+                                [{text: "Удалить из избранного", callback_data: "remove_favorite"}]
+                            ]
                             break;
                         }
                     }
                     break;
                 }
             }
-
-            res(flag)
+            res(buttons)
         })
     })
 }
+
+
 
 // Статистика
 export async function getStats(id) {

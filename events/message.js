@@ -5,38 +5,35 @@ export async function run (bot) {
 
     bot.on("message", async (msg) => {
         if (msg.text[0] !== '/') {
-            addUser(msg.chat.id)
-
+            await addUser(msg.chat.id)
             sendLog(`${msg.from.username}(${msg.from.id}): ${msg.text}`)
             
-            getGroup(msg.text.replace(".", ". ")).then(async group => {
-                getTable(group.group).then(async table => {
-                    let board = []
-                    isFavorite(msg.chat.id, group.name).then(async flag => {
-                        
-                        if (flag) {
-                            board = [
-                                [{text: "Выбрать день", callback_data: "select_day"}, {text: "Выбрать неделю", callback_data: "select_week"}],
-                                [{text: "Удалить из избранного", callback_data: "remove_favorite"}]
-                            ]
-                        } else {
-                            board = [
-                                [{text: "Выбрать день", callback_data: "select_day"}, {text: "Выбрать неделю", callback_data: "select_week"}],
-                                [{text: "Добавить в избранное", callback_data: "add_to_favorite"}]
-                            ]
+            await getGroup(msg.text.replace(".", ". ")).then(async result => {
+                if (result?.buttons?.length > 0) {
+                    await bot.sendMessage(msg.chat.id, "❗ По вашему поискову запросу не были найдены совпадения. Если ничего из ниже привидённого не является ожидаемым результатом, то введите точный поисковой запрос.", {
+                        parse_mode: "Markdown",
+                        reply_markup: {
+                            resize_keyboard: true,
+                            inline_keyboard: result.buttons
                         }
-                        const opts = {
-                            parse_mode: "Markdown",
-                            reply_markup: {
-                                resize_keyboard: true,
-                                inline_keyboard: board
-                            }
-                        };
-                        await bot.sendMessage(msg.chat.id, `*📚 Расписание - ${group.name} - ${table.week} неделя*\n\n`, opts)
-                        await bot.deleteMessage(msg.chat.id, msg.message_id)
-                })
+                    })
+                } else {
+                    getTable(result.group).then(async table => {
+                        await isFavorite(msg.chat.id, result.name).then(async buttons => {
+                            await bot.sendMessage(msg.chat.id, `*📚 Расписание - ${result.name} - ${table.week} неделя*\n\n`, {
+                                parse_mode: "Markdown",
+                                reply_markup: {
+                                    resize_keyboard: true,
+                                    inline_keyboard: buttons
+                                }
+                            })
+                        })
+                    })
+                }
+
+                    await bot.deleteMessage(msg.chat.id, msg.message_id)
+
             })
-        })
             .catch(async error => await bot.sendMessage(msg.chat.id, error, {reply_to_message_id: msg.message_id}))
         }
     })
