@@ -10,7 +10,7 @@ export async function run (bot, msg, args) {
                 [{text: "Cайт ЮФУ", url: "https://sfedu.ru"}],
                 [{text: "Сайт с расписанием", url: "https://ictis.ru"}],
                 [{text: "Бонусы для студентов", url: "https://ictis.ru/free"}],
-                [{text: "Расписание для Android", url: "https://t.me/ictis_raspisanie"}],
+                [{text: "sfedu hub", url: "https://sfeduhub.ru"}],
                 [{text: "Исходный код", url: "https://github.com/dhjwst/ictis-schedule"}]
             ],
         }
