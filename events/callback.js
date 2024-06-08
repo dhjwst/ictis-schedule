@@ -38,6 +38,7 @@ export async function run (bot) {
                                         [{text: "Понедельник", callback_data: "d0"}, {text: "Вторник", callback_data: "d1"}, {text: "Среда", callback_data: "d2"}],
                                         [{text: "Четверг", callback_data: "d3"}, {text: "Пятница", callback_data: "d4"}, {text: "Суббота", callback_data: "d5"}],
                                         [{text: "Вся неделя", callback_data: "d6"}],
+                                        [{text: "Выбрать неделю", callback_data: "select_week"}],
                                         [{text: "Назад", callback_data: "main"}]
                                     ]
                                 }
@@ -58,6 +59,7 @@ export async function run (bot) {
                                     [{text: "Понедельник", callback_data: "d0"}, {text: "Вторник", callback_data: "d1"}, {text: "Среда", callback_data: "d2"}],
                                     [{text: "Четверг", callback_data: "d3"}, {text: "Пятница", callback_data: "d4"}, {text: "Суббота", callback_data: "d5"}],
                                     [{text: "Вся неделя", callback_data: "d6"}],
+                                    [{text: "Выбрать неделю", callback_data: "select_week"}],
                                     [{text: "Назад", callback_data: "main"}]
                                 ]}, {
                                     chat_id: query.message.chat.id,
