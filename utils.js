@@ -95,39 +95,41 @@ export async function getSchedule(group, day, id, week=-1) {
     })
 }
 
-
+// Возвращает строку в консоль в виде "HH:MM:SS DD-MM-YYYY"
+export async function getTime() {
+    return new Promise(async res => {
+        let time = new Date();
+        let currentTime = `${time.getHours() <= 9 ? "0" + time.getHours() : time.getHours()}:${time.getMinutes() <= 9 ? "0" + time.getMinutes() : time.getMinutes()}:${time.getSeconds() <= 9 ? "0" + time.getSeconds() : time.getSeconds()}`;
+        let currentDate = `${time.getDate() <= 9 ? "0" + time.getDate() : time.getDate()}-${(time.getMonth() + 1) <= 9 ? "0" + (time.getMonth() + 1) : (time.getMonth() + 1)}-${time.getFullYear()}`;
+        let dateTime = `${currentTime} ${currentDate}`;
+        res(dateTime);
+    });
+}
 
 // Логирование
 // Отправляет результат действия в консоль, сохраняет в файл logs.txt вместе со временем
 export async function sendLog(text) {
 
     readFile('logs.txt', async (err, data) => {
-        data += `${await getTime()} ${text}\n`
+        data += `[${await getTime()}] ${text}\n`
         writeFileSync("logs.txt", data)
     });
 
-    console.log(await getTime() + text)
+    console.log(`[${await getTime()}] ${text}`)
 }
 
-// Возвращает строку в консоль в виде "HH:MM:SS"
-export async function getTime() {
-    return new Promise(async res => {
-        let time = new Date()
-        let date = `${time.getHours() <= 9 ? "0" + time.getHours() : time.getHours()}:${time.getMinutes() <= 9 ? "0" + time.getMinutes() : time.getMinutes()}:${time.getSeconds() <= 9 ? "0" + time.getSeconds() : time.getSeconds()} `
-        res(date)
-    })
-}
+
 
 
 
 // Файлы
 export async function checkFileDB() {
     if(!existsSync('./users.json')) {
-        sendLog('Файл с данными был создан')
+        await sendLog('Файл с данными был создан')
         writeFileSync('users.json', '{"users": [], "stats": {"schedulesReceivedTotal": 0}}')
     }
     if(!existsSync('./logs.txt')) {
-        sendLog('Файл с логами был создан')
+        await sendLog('Файл с логами был создан')
         writeFileSync('users.json', '{"users": [], "stats": {"schedulesReceivedTotal": 0}}')
     }
 }
