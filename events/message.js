@@ -4,7 +4,7 @@ import {sendLog, getGroup, getTable, addUser, isFavorite} from "../utils.js";
 export async function run (bot) {
 
     bot.on("message", async (msg) => {
-        if (msg.text[0] !== '/') {
+        if (msg?.text !== undefined && msg.text[0] !== '/') {
             await addUser(msg.chat.id)
             sendLog(`${msg.from.username}(${msg.from.id}): ${msg.text}`)
             
